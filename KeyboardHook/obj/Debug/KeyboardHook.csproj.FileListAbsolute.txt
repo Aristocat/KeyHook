@@ -1,0 +1,5 @@
+C:\Users\Itzik\Desktop\Projects\KeyboardHook\KeyboardHook\bin\Debug\KeyboardHook.dll
+C:\Users\Itzik\Desktop\Projects\KeyboardHook\KeyboardHook\bin\Debug\KeyboardHook.pdb
+C:\Users\Itzik\Desktop\Projects\KeyboardHook\KeyboardHook\obj\Debug\KeyboardHook.csprojResolveAssemblyReference.cache
+C:\Users\Itzik\Desktop\Projects\KeyboardHook\KeyboardHook\obj\Debug\KeyboardHook.dll
+C:\Users\Itzik\Desktop\Projects\KeyboardHook\KeyboardHook\obj\Debug\KeyboardHook.pdb

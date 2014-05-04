@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace KeyHook
+namespace KeyboardHook
 {
-    public sealed class KeyboardHook : IDisposable
+    public sealed class KeyHook : IDisposable
     {
-        // Registers a hot key with Windows.
         [DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
-        // Unregisters the hot key with Windows.
+
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
         /// <summary>
         /// Represents the window that is used internally to get the messages.
         /// </summary>
@@ -25,7 +22,6 @@ namespace KeyHook
 
             public Window()
             {
-                // create the handle for the window.
                 this.CreateHandle(new CreateParams());
             }
 
@@ -37,14 +33,11 @@ namespace KeyHook
             {
                 base.WndProc(ref m);
 
-                // check if we got a hot key pressed.
                 if (m.Msg == WM_HOTKEY)
                 {
-                    // get the keys.
                     Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
                     ModifierKeys modifier = (ModifierKeys)((int)m.LParam & 0xFFFF);
 
-                    // invoke the event to notify the parent.
                     if (KeyPressed != null)
                         KeyPressed(this, new KeyPressedEventArgs(modifier, key));
                 }
@@ -62,14 +55,25 @@ namespace KeyHook
             #endregion
         }
 
+        private Dictionary<HotKey, EventHandler<KeyPressedEventArgs>> _keyHandlers;
+
         private Window _window = new Window();
         private int _currentId;
 
-        public KeyboardHook()
+        public KeyHook()
         {
-            // register the event of the inner native window.
+            _keyHandlers = new Dictionary<HotKey, EventHandler<KeyPressedEventArgs>>();
+
             _window.KeyPressed += delegate(object sender, KeyPressedEventArgs args)
             {
+                foreach (HotKey e in _keyHandlers.Keys)
+                {
+                    if (e.Modifier == args.Modifier && e.Key == args.Key)
+                    {
+                        _keyHandlers[e](this, args);
+                        return;
+                    }
+                }
                 if (KeyPressed != null)
                     KeyPressed(this, args);
             };
@@ -80,48 +84,39 @@ namespace KeyHook
         /// </summary>
         /// <param name="modifier">The modifiers that are associated with the hot key.</param>
         /// <param name="key">The key itself that is associated with the hot key.</param>
-        public void RegisterHotKey(ModifierKeys modifier, Keys key)
+        public int RegisterHotKey(ModifierKeys modifier, Keys key)
         {
-            // increment the counter.
-            _currentId = _currentId + 1;
+            _currentId++;
 
-            // register the hot key.
             if (!RegisterHotKey(_window.Handle, _currentId, (uint)modifier, (uint)key))
                 throw new InvalidOperationException("Couldn't register the hot key.");
+
+            return _currentId;
         }
 
         /// <summary>
         /// Unregisters a hot key in the system.
         /// </summary>
-
-        public void UnregisterLastHotKey()
+        /// <param name="id">The id of the hot key.</param>
+        public bool UnregisterHotKey(int id)
         {
-            // decrement the counter.
-            _currentId = _currentId - 1;
-
-            // unregister the hot key.
-            if (!UnregisterHotKey(_window.Handle, _currentId))
-                throw new InvalidOperationException("Couldn't unregister the hot key.");
-        }
-
-        /// <summary>
-        /// Unregisters a hot key in the system.
-        /// </summary>
-
-        public void UnregisterHotKeys()
-        {
-            // unregister all the registered hot keys.
-            for (int i = _currentId; i > 0; i--)
-            {
-                if (!UnregisterHotKey(_window.Handle, i))
-                    throw new InvalidOperationException("Couldn't unregister the hot key.");
-            }
+            return !UnregisterHotKey(_window.Handle, id);
         }
 
         /// <summary>
         /// A hot key has been pressed.
         /// </summary>
         public event EventHandler<KeyPressedEventArgs> KeyPressed;
+
+        /// <summary>
+        /// Attaches a handler for a hot key.
+        /// </summary>
+        /// <param name="hotkey">The arguments of the hot key.</param>
+        /// <param name="e">The event handler of the hot key.</param>
+        public void AttachHandler(HotKey hotkey, EventHandler<KeyPressedEventArgs> e)
+        {
+            _keyHandlers.Add(hotkey, e);
+        }
 
         #region IDisposable Members
 
@@ -138,42 +133,5 @@ namespace KeyHook
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// Event Args for the event that is fired after the hot key has been pressed.
-    /// </summary>
-    public class KeyPressedEventArgs : EventArgs
-    {
-        private ModifierKeys _modifier;
-        private Keys _key;
-
-        internal KeyPressedEventArgs(ModifierKeys modifier, Keys key)
-        {
-            _modifier = modifier;
-            _key = key;
-        }
-
-        public ModifierKeys Modifier
-        {
-            get { return _modifier; }
-        }
-
-        public Keys Key
-        {
-            get { return _key; }
-        }
-    }
-
-    /// <summary>
-    /// The enumeration of possible modifiers.
-    /// </summary>
-    [Flags]
-    public enum ModifierKeys : uint
-    {
-        Alt = 1,
-        Control = 2,
-        Shift = 4,
-        Win = 8
     }
 }

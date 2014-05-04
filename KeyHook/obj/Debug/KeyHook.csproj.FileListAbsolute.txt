@@ -1,9 +1,0 @@
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\bin\Debug\KeyHook.exe.config
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\bin\Debug\KeyHook.exe
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\bin\Debug\KeyHook.pdb
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\obj\Debug\KeyHook.csprojResolveAssemblyReference.cache
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\obj\Debug\KeyHook.Form1.resources
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\obj\Debug\KeyHook.Properties.Resources.resources
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\obj\Debug\KeyHook.csproj.GenerateResource.Cache
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\obj\Debug\KeyHook.exe
-C:\Users\Itzik\Desktop\Projects\KeyHook\KeyHook\obj\Debug\KeyHook.pdb
