@@ -39,3 +39,11 @@ private void keyHook_KeyPressed(object sender, KeyPressedEventArgs e)
 		e.Modifier, Enum.GetName(typeof(Keys), e.Key));
 }
 ```
+
+| Modifier | Value |
+|:---------|:-----:|
+| None     | 0     |
+| Alt      | 1     |
+| Ctrl     | 2     |
+| Shift    | 4     |
+| Win      | 8     |
